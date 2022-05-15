@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Why is Google Photos Sync Read Only &mdash; gphotos-sync 2.14.3.dev113+g4e0ea62 documentation</title>
+  <title>Google OAuth Tokens for gphotos-sync &mdash; gphotos-sync 2.14.3.dev113+g4e0ea62 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Known Issues with Google API" href="googleapiissues.html" />
-    <link rel="prev" title="Additional Setup for Windows Machines" href="../how-to/windows.html" /> 
+    <link rel="next" title="Contributing" href="../reference/contributing.html" />
+    <link rel="prev" title="Known Issues with Google API" href="googleapiissues.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -58,9 +58,13 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Explanations</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Why is Google Photos Sync Read Only</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes.html">Why is Google Photos Sync Read Only</a></li>
 <li class="toctree-l1"><a class="reference internal" href="googleapiissues.html">Known Issues with Google API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tokens.html">Google OAuth Tokens for gphotos-sync</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Google OAuth Tokens for gphotos-sync</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-do-we-need-client-id">Why Do We Need Client ID ?</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -86,9 +90,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Why is Google Photos Sync Read Only</li>
+      <li>Google OAuth Tokens for gphotos-sync</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/explanations/notes.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/explanations/tokens.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -96,32 +100,66 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="why-is-google-photos-sync-read-only">
-<h1>Why is Google Photos Sync Read Only<a class="headerlink" href="#why-is-google-photos-sync-read-only" title="Permalink to this headline"></a></h1>
-<p>Google Photos Sync is a backup tool only. It never makes any changes to your
-Google Photos Library in the cloud. There are two primary reasons for this:</p>
-<ul class="simple">
-<li><p>The Photos API provided by Google is far too restricted to make changes
-in any meaningful way. For example</p>
-<ul>
-<li><p>there is no delete function</p></li>
-<li><p>you cannot add photos to an album unless it was created by the same
-application that is trying to add photos</p></li>
+  <section id="google-oauth-tokens-for-gphotos-sync">
+<span id="tokens"></span><h1>Google OAuth Tokens for gphotos-sync<a class="headerlink" href="#google-oauth-tokens-for-gphotos-sync" title="Permalink to this headline"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<p>There are two kinds of authentication required to run gphotos-sync.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>First the application must authenticate with Google to authorize the use
+of the Google Photos API. This gives it permission to perform the
+second authentication step.</p></li>
+<li><p>Second, an individual User Account must me authenticated to allow access
+to that user’s Google Photos Library.</p></li>
 </ul>
-</li>
-<li><p>Even if the API allowed it, this would be a very hard problem, because
-it is often hard to identify if a local photo or video matches one in the
-cloud. Besides this, I would not want the resposibility of potentially
-trashing someone’s photo collection.</p></li>
+</div></blockquote>
+<p>The secret information that enables these authentication steps is held in
+two files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>client_secret.json holds the OAuth application ID that allows the
+first step. This is stored in an application configuration folder.
+There is only one of these files per installation of gphotos-sync.
+See <a class="reference internal" href="../tutorials/oauth2.html#client-id"><span class="std std-ref">Creating an OAuth Client ID</span></a> for details of creating this file.</p></li>
+<li><p>.gphotos.token holds the user token for each user you are backing up
+photos for. This resides in the root folder of the library backup.
+See <a class="reference internal" href="../tutorials/login.html#login"><span class="std std-ref">User Login OAuth Flow</span></a> for details of creating this file.</p></li>
 </ul>
+</div></blockquote>
+</section>
+<section id="why-do-we-need-client-id">
+<h2>Why Do We Need Client ID ?<a class="headerlink" href="#why-do-we-need-client-id" title="Permalink to this headline"></a></h2>
+<p>The expected use of the client ID is that a vendor provides a single ID
+for their application, Google verifies the application and then anyone
+can use it.</p>
+<p>In this scenario ALL Google API calls would count against the vendor’s
+account. They would be charged for use of those APIs and they would
+need to charge their users to make this worthwhile.</p>
+<p>If I was to provide my own client ID with gphotos-sync then I would need
+to charge a subscription to cover API costs.</p>
+<p>Since this is FOSS I ask every user to create their own client ID
+so they can take advantage of the free tier of Google API use that is
+available to every user.</p>
+<p>Most normal use of gphotos-sync does not exceed the free tier. If it does
+you will not be charged. The code is supposed to throttle back and go slower
+to drop back into the free usage rate. However there is an issue with this
+feature at present and you will likely see an error:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">429</span> <span class="pre">Client</span> <span class="pre">Error:</span> <span class="pre">Too</span> <span class="pre">Many</span> <span class="pre">Requests</span> <span class="pre">for</span> <span class="pre">url</span></code>.</p>
+</div></blockquote>
+<p>See <a class="reference external" href="https://github.com/gilesknap/gphotos-sync/issues/320">https://github.com/gilesknap/gphotos-sync/issues/320</a>,
+<a class="reference external" href="https://github.com/gilesknap/gphotos-sync/issues/202">https://github.com/gilesknap/gphotos-sync/issues/202</a> for details and
+workarounds.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../how-to/windows.html" class="btn btn-neutral float-left" title="Additional Setup for Windows Machines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="googleapiissues.html" class="btn btn-neutral float-right" title="Known Issues with Google API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="googleapiissues.html" class="btn btn-neutral float-left" title="Known Issues with Google API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reference/contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
