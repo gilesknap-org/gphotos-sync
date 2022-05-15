@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Google OAuth Tokens for gphotos-sync &mdash; gphotos-sync 2.14.3.dev116+g7020acd documentation</title>
+  <title>Comparing The Google Photos Library With Local files &mdash; gphotos-sync 2.14.3.dev116+g7020acd documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Known Issues" href="googleapiissues.html" />
-    <link rel="prev" title="Why is Google Photos Sync Read Only" href="notes.html" /> 
+    <link rel="next" title="Why is Google Photos Sync Read Only" href="../explanations/notes.html" />
+    <link rel="prev" title="Scheduling a Regular Backup" href="cron.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,20 +53,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/login.html">User Login OAuth Flow</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">How-to Guides</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../how-to/windows.html">Additional Setup for Windows Machines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how-to/cron.html">Scheduling a Regular Backup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how-to/comparison.html">Comparing The Google Photos Library With Local files</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="windows.html">Additional Setup for Windows Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cron.html">Scheduling a Regular Backup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Comparing The Google Photos Library With Local files</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Explanations</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="notes.html">Why is Google Photos Sync Read Only</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Google OAuth Tokens for gphotos-sync</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#why-do-we-need-client-id">Why Do We Need Client ID ?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="googleapiissues.html">Known Issues</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/notes.html">Why is Google Photos Sync Read Only</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/tokens.html">Google OAuth Tokens for gphotos-sync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/googleapiissues.html">Known Issues</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -89,9 +85,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Google OAuth Tokens for gphotos-sync</li>
+      <li>Comparing The Google Photos Library With Local files</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/explanations/tokens.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/how-to/comparison.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -99,66 +95,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="google-oauth-tokens-for-gphotos-sync">
-<span id="tokens"></span><h1>Google OAuth Tokens for gphotos-sync<a class="headerlink" href="#google-oauth-tokens-for-gphotos-sync" title="Permalink to this headline"></a></h1>
-<section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
-<p>There are two kinds of authentication required to run gphotos-sync.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>First the application must authenticate with Google to authorize the use
-of the Google Photos API. This gives it permission to perform the
-second authentication step.</p></li>
-<li><p>Second, an individual User Account must me authenticated to allow access
-to that user’s Google Photos Library.</p></li>
+  <section id="comparing-the-google-photos-library-with-local-files">
+<h1>Comparing The Google Photos Library With Local files<a class="headerlink" href="#comparing-the-google-photos-library-with-local-files" title="Permalink to this headline"></a></h1>
+<p>There will be additional folders created when using the –compare-folder option.</p>
+<p>The option is used to make a
+comparison of the contents of your library with a local folder such as a previous backup. The comparison does not require
+that the files are arranged in the same folders, it uses meta-data in the files such as create date and
+exif UID to match pairs of items. The additional folders after a comparison will be:</p>
+<ul class="simple">
+<li><p><strong>comparison</strong> a new folder off of the specified root containing the following:</p></li>
+<li><p><strong>missing_files</strong> - contains symlinks to the files in the comparison folder that were not found in the Google
+Photos Library. The folder structure is the same as that in the comparison folder. These are the
+files that you would upload to Google Photos via the Web interface to restore from backup.</p></li>
+<li><p><strong>extra_files</strong> - contains symlinks into to the files in photos folder which appear in the Library but not in the
+comparison folder. The folder structure is the same as the photos folder.</p></li>
+<li><p><strong>duplicates</strong> - contains symlinks to any duplicate files found in the comparison folder. This is a flat structure
+and the symlink filenames have a numeric prefix to make them unique and group the duplicates together.</p></li>
 </ul>
-</div></blockquote>
-<p>The secret information that enables these authentication steps is held in
-two files:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>client_secret.json holds the OAuth application ID that allows the
-first step. This is stored in an application configuration folder.
-There is only one of these files per installation of gphotos-sync.
-See <a class="reference internal" href="../tutorials/oauth2.html#client-id"><span class="std std-ref">Creating an OAuth Client ID</span></a> for details of creating this file.</p></li>
-<li><p>.gphotos.token holds the user token for each user you are backing up
-photos for. This resides in the root folder of the library backup.
-See <a class="reference internal" href="../tutorials/login.html#login"><span class="std std-ref">User Login OAuth Flow</span></a> for details of creating this file.</p></li>
+<p>NOTES:</p>
+<ul class="simple">
+<li><p>the comparison code uses an external tool ‘ffprobe’. It will run without it but will not be able to
+extract metadata from video files and revert to relying on Google Photos meta data and file modified date (this is
+a much less reliable way to match video files, but the results should be OK if the backup folder
+was originally created using gphotos-sync).</p></li>
+<li><p>If you have shared albums and have clicked ‘add to library’ on items from others’ libraries then you will have two
+copies of those items and they will show as duplicates too.</p></li>
 </ul>
-</div></blockquote>
-</section>
-<section id="why-do-we-need-client-id">
-<h2>Why Do We Need Client ID ?<a class="headerlink" href="#why-do-we-need-client-id" title="Permalink to this headline"></a></h2>
-<p>The expected use of the client ID is that a vendor provides a single ID
-for their application, Google verifies the application and then anyone
-can use it.</p>
-<p>In this scenario ALL Google API calls would count against the vendor’s
-account. They would be charged for use of those APIs and they would
-need to charge their users to make this worthwhile.</p>
-<p>If I was to provide my own client ID with gphotos-sync then I would need
-to charge a subscription to cover API costs.</p>
-<p>Since this is FOSS I ask every user to create their own client ID
-so they can take advantage of the free tier of Google API use that is
-available to every user.</p>
-<p>Most normal use of gphotos-sync does not exceed the free tier. If it does
-you will not be charged. The code is supposed to throttle back and go slower
-to drop back into the free usage rate. However there is an issue with this
-feature at present and you will likely see an error:</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">429</span> <span class="pre">Client</span> <span class="pre">Error:</span> <span class="pre">Too</span> <span class="pre">Many</span> <span class="pre">Requests</span> <span class="pre">for</span> <span class="pre">url</span></code>.</p>
-</div></blockquote>
-<p>See <a class="reference external" href="https://github.com/gilesknap/gphotos-sync/issues/320">https://github.com/gilesknap/gphotos-sync/issues/320</a>,
-<a class="reference external" href="https://github.com/gilesknap/gphotos-sync/issues/202">https://github.com/gilesknap/gphotos-sync/issues/202</a> for details and
-workarounds.</p>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="notes.html" class="btn btn-neutral float-left" title="Why is Google Photos Sync Read Only" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="googleapiissues.html" class="btn btn-neutral float-right" title="Known Issues" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cron.html" class="btn btn-neutral float-left" title="Scheduling a Regular Backup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../explanations/notes.html" class="btn btn-neutral float-right" title="Why is Google Photos Sync Read Only" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
